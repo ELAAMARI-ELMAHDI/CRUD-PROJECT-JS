@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../bootstrap-5.0.2-dist/css/bootstrap.css">
+    <title>CRUD</title>
+</head>
+<body style="background-color: black;">
+    <style>
+        input{
+            border-radius: 5px;
+        }
+        input:focus{
+            color: white;
+            background-color: black;
+            border: 1px solid red;
+            transform: scale(1.1);
+
+        }
+        
+        button{
+            transition: 0.5s;
+        }
+        button:hover{
+            letter-spacing: 1px;
+            background-color: rgb(162, 75, 34);
+
+        }
+        tr{
+            color: aliceblue;
+        }
+        th{
+            color: aliceblue;
+            text-align: center;
+        }
+        td{
+            text-align: center;
+            color: aliceblue;
+        }
+    </style>
+
+    <div class="crud">
+        <div class="head">
+            <h1 style="text-align: center;width: 100%;color: aliceblue;">CRUD-PROJECT</h1>
+            <div><h3 style="text-align: center;color: aliceblue;border-bottom:2px solid red;width: 100%;">Product management system</h3></div>
+        </div><br><br>
+    </div>
+    <div class="input">
+            <input type="text" id="title" placeholder="Enter product title" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;">
+            <div style="display: flex;width: 50%;margin-left: 25%;height: 50px;align-items: center;justify-content: center;">
+                <input onkeyup="total(event)" type="number" id="price" placeholder="Enter product price" >
+                <input onkeyup="total(event)" type="number" id="taxes" placeholder="Enter product taxes" style="margin-left: 10px;">
+                <input onkeyup="total(event)" type="number" id="ads" placeholder="Enter product ads" style="margin-left: 10px;">
+                <input onkeyup="total(event)" type="number" id="discount" placeholder="Enter product discount" style="margin-left: 10px;">
+                <button id="total" class="btn btn-danger m-2 " style="border-radius:10px;">Total</button>
+            </div>
+                <input type="number"  id="count" placeholder="Enter count <=50" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;">
+                <input type="text" id="categ" placeholder="Enter product category" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;"><br>
+                <button id="creat" class="btn btn-danger" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;border-radius: 10px;" onclick="creat(event)">Creat</button>
+
+         
+
+    </div><br><br>
+
+    <div class="output">
+        <div class="search">
+
+            
+                <input onkeyup="searchBy(this.value)" type="text" id="search" placeholder="Chose by" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;">
+                <button onclick="getSearchMode(this.id)" id="searcht" class="btn btn-danger" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;border-radius: 10px;">Search by title</button>
+                <button onclick="getSearchMode(this.id)" id="searchc" class="btn btn-danger" style="width: 50%;height: 50px;margin-bottom: 10px;margin-left: 25%;border-radius: 10px;">Search by category</button>
+        </div> <br><br>
+
+        <div  style="margin-left: 46%;">
+            <button class="btn btn-danger" onclick="DALL(event)">Delete All</button>
+        </div><br>
+
+        <table style="width: 90%;margin-left: 5%;" id="tab" class="table">
+            <tr>
+                <th>ID</th>
+                <th>TITLE</th>
+                <th>PRICE</th>
+                <th>TAXES</th>
+                <th>ADS</th>
+                <th>DISCOUNT</th>
+                <th>CATEGORY</th>
+                <th>UPDATE</th>
+                <th>DELETE</th>
+            </tr>
+
+            <tbody id="tbody">
+                <!-- Data will be inserted here -->
+             
+            </tbody>
+
+       
+
+        </table>
+    </div>       
+   
+
+
+
+
+
+
+    <script>
+
+        let title = document.getElementById("title");
+        let price = document.getElementById("price");
+        let taxes = document.getElementById("taxes");
+        let ads = document.getElementById("ads");
+        let discount = document.getElementById("discount");
+        let count = document.getElementById("count");
+        let categ = document.getElementById("categ");
+        let search = document.getElementById("search");
+
+        let allb = document.getElementById("allb");
+        let tab = document.getElementById("tab");
+        let tbody = document.getElementById("tbody");
+
+
+      
+
+
+
+
+        function total(e){
+
+
+            e.preventDefault();
+
+            if(price.value != ""){
+            let total = document.getElementById("total");
+            let res = (Number(price.value) + Number(taxes.value) + Number(ads.value)) - Number(discount.value);
+            total.innerHTML ="Total:" + res;
+
+
+            }
+        }
+
+
+        let data;
+
+        if(localStorage.product != null){
+            data = JSON.parse(localStorage.product);
+       
+        }else{
+            data = [];
+        }
+   
+        function creat(e){
+            e.preventDefault();
+            let tab = document.getElementById("tab");
+          
+            let newOb = {
+                title: title.value.toLowerCase(),
+                price: price.value,
+                taxes: taxes.value,
+                ads: ads.value,
+                discount: discount.value,
+                total:total.innerHTML,
+                count: count.value,
+                categ: categ.value.toLowerCase()
+
+            }
+            for(let i = 0; i < newOb.count; i++){
+                data.push(newOb);
+            }
+            
+            localStorage.setItem("product", JSON.stringify(data));
+
+            if(title.value != "" && price.value != "" && taxes.value != "" && ads.value != "" && discount.value != "" && newOb.count <=50 && categ.value != ""){
+                
+          
+                alert("Product created successfully!");
+                show();
+                clear();
+
+
+
+
+                
+
+            } else {
+                alert("Please fill all fields.");
+            }}
+
+        
+        function show(){
+            
+            let tab = "";
+            for(let i = 0; i < data.length; i++){
+                tab += `
+                <tr>
+                    <td>${i}</td>
+                    <td>${data[i].title}</td>
+                    <td>${data[i].price}</td>
+                    <td>${data[i].taxes}</td>
+                    <td>${data[i].ads}</td>
+                    <td>${data[i].discount}</td>
+                    <td>${data[i].categ}</td>
+                    <td><button class="btn btn-success" onclick="update(${i})">Update</button></td>
+                    <td><button class="btn btn-danger" onclick="delet(${i})">Delete</button></td>
+
+                `;
+            }
+            document.getElementById("tbody").innerHTML = tab;
+        }
+        show();
+
+
+
+        function clear() {
+            title.value = "";
+            price.value = "";
+            taxes.value = "";
+            ads.value = "";
+            discount.value = "";
+            count.value = "";
+            categ.value = "";
+            total.innerHTML = "Total";
+
+            
+
+
+        }
+        
+        function delet(i){
+            if(confirm("Are you sure you want to delete this product? " + i+" " +data[i].title)) {
+                data.splice(i, 1);
+                localStorage.product = JSON.stringify(data);                
+                show();
+         
+          
+        }}
+
+        function update(i){
+        
+            title.value = data[i].title;
+            price.value = data[i].price;
+            taxes.value = data[i].taxes;
+            ads.value = data[i].ads;
+            discount.value = data[i].discount;
+            categ.value = data[i].categ;
+            count.style.display = "none";
+            document.getElementById("creat").style.display = "none";
+            let updateBtn = document.createElement("button");
+            updateBtn.innerHTML = "Update Product";
+            updateBtn.className = "btn btn-success";
+            updateBtn.onclick = function() {
+                data[i].title = title.value;
+                data[i].price = price.value;
+                data[i].taxes = taxes.value;
+                data[i].ads = ads.value;
+                data[i].discount = discount.value;
+                data[i].categ = categ.value;
+                localStorage.product = JSON.stringify(data);
+                show();
+                clear();
+                count.style.display = "block";
+                document.getElementById("creat").style.display = "block";
+                updateBtn.remove();
+            };
+            document.body.appendChild(updateBtn);
+        }
+
+        function DALL(e){
+            e.preventDefault();
+            if(confirm("Are you sure you want to delete all products?")) {
+                localStorage.clear();
+                data.splice(0, data.length);
+
+                show();
+                alert("All products deleted successfully!");
+            }
+        };
+        
+        let searchM="title";
+        function getSearchMode(id) {
+            let search = document.getElementById("search");
+            if (id === "searcht") {
+                searchM = "title";
+                search.placeholder = "Search by title";
+                
+
+
+
+              
+            } else if (id === "searchc") {
+                searchM = "categ";
+                search.placeholder = "Search by category";
+
+   
+
+           
+        }
+        search.focus();
+        search.value = "";
+        show();
+        
+        
+    };
+
+    function searchBy(value){
+        let tab ="";
+        if (searchM === "title") {
+       
+            for (let i =0 ; i < data.length; i++) {
+                if (data[i].title.toLowerCase().includes(value.toLowerCase())) {
+                    tab += `
+                    <tr>
+                        <td>${i}</td>
+                        <td>${data[i].title}</td>
+                        <td>${data[i].price}</td>
+                        <td>${data[i].taxes}</td>
+                        <td>${data[i].ads}</td>
+                        <td>${data[i].discount}</td>
+                        <td>${data[i].categ}</td>
+                        <td><button class="btn btn-success" onclick="update(${i})">Update</button></td>
+                        <td><button class="btn btn-danger" onclick="delet(${i})">Delete</button></td>
+                    </tr>`;
+                }
+        
+       
+         } 
+          
+        }else 
+            
+        if (searchM === "categ") {
+
+       
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].categ.toLowerCase().includes(value.toLowerCase())) {
+                    tab += `
+                    <tr>
+                        <td>${i}</td>
+                        <td>${data[i].title}</td>
+                        <td>${data[i].price}</td>
+                        <td>${data[i].taxes}</td>
+                        <td>${data[i].ads}</td>
+                        <td>${data[i].discount}</td>
+                        <td>${data[i].categ}</td>
+                        <td><button class="btn btn-success" onclick="update(${i})">Update</button></td>
+                        <td><button class="btn btn-danger" onclick="delet(${i})">Delete</button></td>
+                    </tr>`;
+                }
+            }
+
+           
+        }
+        document.getElementById("tbody").innerHTML = tab;
+    };
+
+
+
+    
+
+    
+    
+
+
+    </script>
+    
+</body>
+</html>
